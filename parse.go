@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/sha1"
 	"encoding/json"
@@ -11,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type SLA struct {
@@ -87,22 +87,28 @@ func main() {
 		panic(err)
 	}
 
-	var b bytes.Buffer
-	w := bufio.NewWriter(&b)
+	count := 0
+	for _, v := range props {
+		if v.Price < 3000 && v.Status == "AN" {
+			count++
+		}
+	}
+	fmt.Println(count, "applicable properties")
 
-	err = t.Execute(w, props)
+	b := &bytes.Buffer{}
+
+	err = t.Execute(b, props)
 	if err != nil {
 		panic(err)
 	}
-	w.Flush()
 
 	h := sha1.New()
 	h.Write(b.Bytes())
-	fmt.Println(b.Bytes())
-	fmt.Printf("% x\n", h.Sum(nil))
 
 	sha1_hash := fmt.Sprintf("%x", h.Sum(nil))
-	fmt.Println("Writing", sha1_hash)
-	ioutil.WriteFile(sha1_hash+".txt", b.Bytes(), 0644)
+	date := time.Now().Local().Format("2006-01-02")
+	filename := date + "_" + strconv.Itoa(count) + "_" + sha1_hash + ".html"
+	fmt.Println("Writing", filename)
+	ioutil.WriteFile(filename, b.Bytes(), 0644)
 
 }
