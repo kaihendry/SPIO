@@ -77,10 +77,11 @@ func main() {
 <html>
 <head>
 <meta charset="utf-8" />
+<title>Available Singapore state properties under 3000SGD</title>
 </head>
 <body>
 <ol>
-{{ range . }}{{if and (lt .Price 3000.0) (eq .Status "AN") }}<li><a href="{{ .URL }}">{{ .GFA }} {{ .Price }}</li>
+{{ range . }}{{if and (lt .Price 3000.0) (eq .Status "AN") }}<li><a href="{{ .URL }}">{{ .GFA }} {{ .Price }}</a></li>
 {{ end }}{{ end }}</ol></body>
 </html>`)
 	if err != nil {
@@ -93,7 +94,6 @@ func main() {
 			count++
 		}
 	}
-	fmt.Println(count, "applicable properties")
 
 	b := &bytes.Buffer{}
 
